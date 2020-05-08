@@ -1,0 +1,20 @@
+---
+apiVersion: vault2kube.sorah.jp/v1
+kind: VaultStoreRule
+metadata:
+  name: vault2kube-test
+  namespace: default
+spec:
+  destinationName: vault2kube-test
+  renewBeforeSeconds: 10000000
+  revokeAfterSeconds: 1
+  rotateBeforeSeconds: 10000000
+  rolloutRestarts:
+  - kind: Deployment
+    name: hello-node
+  sourcePath: database/creds/xxx
+  templates:
+  - key: username
+    template: "{{username}}"
+  - key: password
+    template: "{{password}}"
