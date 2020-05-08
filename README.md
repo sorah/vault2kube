@@ -1,5 +1,7 @@
 # Vault2kube: Periodically store Vault secret to Kubernetes seriticate
 
+__UNDER DEVELOPMENT:__ Docker image and actual k8s manifests to deploy is not yet ready.
+
 ## What's this
 
 Fetch a secret from Vault, and copy it to a k8s secret. Then rollout restart on specified k8s resource.
