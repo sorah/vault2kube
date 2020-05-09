@@ -27,6 +27,9 @@ vim /tmp/setup.yml
 kubectl apply -f /tmp/setup.yml
 ```
 
+By default this enables ClusterRole to update the entire secrets in your cluster. If you're not in favor of this whole cluster setup, you may use namespaced Role instead.
+(Hint: you can use `--namespace` command line argument to enable namespaced API requests)
+
 ### Configuing connection to Vault
 
 The following environment variables are supported, and some of them are required:
