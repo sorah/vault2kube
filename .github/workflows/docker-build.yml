@@ -1,0 +1,42 @@
+name: docker-build
+on: 
+  schedule:
+    - cron: '12 9 2,12,22 * *'
+  push:
+    branches:
+      - master
+
+env:
+  DOCKER_REPO: 'sorah/vault2kube'
+  ALT_DOCKER_REPO: 'gcr.io/${{ secrets.GCP_PROJECT }}/vault2kube'
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: 'echo $GITHUB_SHA > REVISION'
+
+      - name: login-dockerhub
+        run: "echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u sorah --password-stdin"
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: nkmi-misc
+      - run: 'gcloud --quiet auth configure-docker'
+
+      - run: "docker pull ${DOCKER_REPO}:latest || :"
+      - run: "docker pull ${ALT_DOCKER_REPO}:builder || :"
+
+      - run: "docker build --pull --cache-from ${ALT_DOCKER_REPO}:builder --target builder -t ${ALT_DOCKER_REPO}:builder -f Dockerfile ."
+      - run: "docker build --pull --cache-from ${ALT_DOCKER_REPO}:builder --cache-from ${DOCKER_REPO}:latest -t ${DOCKER_REPO}:${GITHUB_SHA} -f Dockerfile ."
+      - run: "docker push ${ALT_DOCKER_REPO}:builder"
+
+      - run: "docker tag ${DOCKER_REPO}:${GITHUB_SHA} ${DOCKER_REPO}:latest"
+      - run: "docker tag ${DOCKER_REPO}:${GITHUB_SHA} ${ALT_DOCKER_REPO}:${GITHUB_SHA}"
+      - run: "docker tag ${DOCKER_REPO}:${GITHUB_SHA} ${ALT_DOCKER_REPO}:latest"
+      - run: "docker push ${DOCKER_REPO}:${GITHUB_SHA}"
+      - run: "docker push ${DOCKER_REPO}:latest"
+      - run: "docker push ${ALT_DOCKER_REPO}:${GITHUB_SHA}"
+      - run: "docker push ${ALT_DOCKER_REPO}:latest"
