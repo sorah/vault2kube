@@ -100,6 +100,40 @@ spec:
     subresources:
       status: {}
 ---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: vault2kube
+  namespace: default
+spec:
+  concurrencyPolicy: Replace
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          automountServiceAccountToken: true
+          containers:
+          - command:
+            - "/usr/bin/vault2kube"
+            - run
+            env:
+            - name: VAULT_ADDR
+              value: https://path.to.your.vault:8200
+            - name: VAULT_K8S_PATH
+              value: auth/kubernetes
+            - name: VAULT_K8S_ROLE
+              value: vault2kube
+            - name: RUST_LOG
+              value: info
+            image: sorah/vault2kube:latest
+            imagePullPolicy: Always
+            name: vault2kube
+          restartPolicy: Never
+          serviceAccountName: vault2kube
+  schedule: 18 */6 * * *
+  successfulJobsHistoryLimit: 3
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -132,16 +166,25 @@ rules:
   verbs:
   - get
   - list
-  - update
+  - patch
 - apiGroups:
   - ''
   resources:
   - secrets
   verbs:
   - create
-  - update
+  - patch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - statefulsets
+  verbs:
+  - patch
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: vault2kube
+  namespace: default

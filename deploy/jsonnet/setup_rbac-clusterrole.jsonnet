@@ -1,8 +1,9 @@
+local vars = import './vars.libsonnet';
 {
   apiVersion: 'rbac.authorization.k8s.io/v1',
   kind: 'ClusterRole',
   metadata: {
-    name: 'vault2kube',
+    name: vars.name,
   },
   rules: [
     {
@@ -13,12 +14,18 @@
     {
       apiGroups: ['vault2kube.sorah.jp'],
       resources: ['vaultstorerules/status'],
-      verbs: ['get', 'list', 'update'],
+      verbs: ['get', 'list', 'patch'],
     },
     {
       apiGroups: [''],
       resources: ['secrets'],
-      verbs: ['create', 'update'],
+      verbs: ['create', 'patch'],
+    },
+    {
+      apiGroups: ['apps'],
+      resources: ['deployments', 'daemonsets', 'statefulsets'],
+      // resourceNames: [],
+      verbs: ['patch'],
     },
   ],
 }

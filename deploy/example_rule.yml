@@ -6,12 +6,12 @@ metadata:
   namespace: default
 spec:
   destinationName: vault2kube-test
-  renewBeforeSeconds: 10000000
+  renewBeforeSeconds: 604800
   revokeAfterSeconds: 1
-  rotateBeforeSeconds: 10000000
   rolloutRestarts:
   - kind: Deployment
     name: hello-node
+  rotateBeforeSeconds: 259200
   sourcePath: database/creds/xxx
   templates:
   - key: username

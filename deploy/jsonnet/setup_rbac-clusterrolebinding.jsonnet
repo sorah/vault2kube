@@ -1,19 +1,20 @@
+local vars = import './vars.libsonnet';
 {
   apiVersion: 'rbac.authorization.k8s.io/v1',
   kind: 'ClusterRoleBinding',
   metadata: {
-    name: 'vault2kube',
+    name: vars.name,
   },
   roleRef: {
     apiGroup: 'rbac.authorization.k8s.io',
     kind: 'ClusterRole',
-    name: 'vault2kube',
+    name: vars.name,
   },
   subjects: [
     {
       kind: 'ServiceAccount',
-      namespace: 'default',
-      name: 'vault2kube',
+      namespace: vars.namespace,
+      name: vars.name,
     },
   ],
 }
