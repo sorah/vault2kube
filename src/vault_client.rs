@@ -1,4 +1,5 @@
 use anyhow::anyhow;
+use log;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
@@ -65,7 +66,7 @@ impl Client {
 			   )?,
 			   String::from_utf8(k8s_jwt)?,
 			).await?;
-        };
+        }
         Ok(client)
     }
 
@@ -100,6 +101,7 @@ impl Client {
         role: String,
         jwt: String,
     ) -> anyhow::Result<()> {
+        log::info!("Authenticating with Kubernetes auth backend");
         let login_path = format!("{}/login", path);
         let payload = KubernetesAuthRequest { role, jwt };
         let response: AuthResponse = self.post(&login_path, &payload).await?.json().await?;
@@ -131,7 +133,7 @@ impl Client {
             request = request.header("X-Vault-Token", token.to_owned());
         }
         let req = request.build()?;
-        self.http.execute(req).await
+        self.http.execute(req).await?.error_for_status()
     }
 }
 
