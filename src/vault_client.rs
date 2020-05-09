@@ -53,7 +53,9 @@ impl Client {
             http: http.build()?,
         };
         if !token_given {
-            let k8s_jwt = std::fs::read(K8S_INCLUSTER_SERVICE_TOKENFILE)?;
+            let k8s_jwt_path = env::var("VAULT_K8S_TOKEN_PATH")
+                .unwrap_or(K8S_INCLUSTER_SERVICE_TOKENFILE.to_string());
+            let k8s_jwt = std::fs::read(k8s_jwt_path)?;
             client.authenticate_using_kubernetes(
 			   env::var("VAULT_K8S_PATH").ok().ok_or(
 				   anyhow!("VAULT_K8S_PATH, VAULT_K8S_ROLE must be present when no VAULT_TOKEN is present"),

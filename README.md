@@ -39,11 +39,12 @@ The following environment variables are supported, and some of them are required
   - `VAULT_NAMESPACE`
   - `VAULT_CACERT`
 - Authentication (required, choose from one of these)
-  - Bearer
+  1. Bearer
     - `VAULT_TOKEN`
-  - Kuberentes
-    - `VAULT_K8S_PATH` (e.g. `auth/kubernetes`)
-    - `VAULT_K8S_ROLE`
+  2. Kubernetes
+    - `VAULT_K8S_PATH` (required, e.g. `auth/kubernetes`)
+    - `VAULT_K8S_ROLE` (required)
+    - `VAULT_K8S_TOKEN_PATH` (optional, default to `/var/run/secrets/kubernetes.io/serviceaccount/token`)
 
 ### Kubernetes Authentication
 
