@@ -186,6 +186,7 @@ impl Runner {
                 rule.metadata.name.as_ref().ok_or("name is missing")?,
                 &kube::api::PatchParams {
                     field_manager: Some("kube2vault.sorah.jp".to_string()),
+                    force: true,
                     ..kube::api::PatchParams::default_apply()
                 },
                 patch,
@@ -217,11 +218,15 @@ impl Runner {
             "status": {"nextLeaseId": next_lease_id}
         }))?;
 
+        // Intentionally force
+        // https://v1-17.docs.kubernetes.io/docs/reference/using-api/api-concepts/#conflicts
+        // https://github.com/cybozu-go/cke/issues/311
         kube_crd
             .patch_status(
                 rule.metadata.name.as_ref().ok_or("name is missing")?,
                 &kube::api::PatchParams {
                     field_manager: Some("kube2vault.sorah.jp".to_string()),
+                    force: true,
                     ..kube::api::PatchParams::default_apply()
                 },
                 patch,
@@ -334,7 +339,9 @@ impl Runner {
             "stringData": string_data,
         });
 
-        // Try to patch, but we need to create when a server returned 404
+        // Intentionally force
+        // https://v1-17.docs.kubernetes.io/docs/reference/using-api/api-concepts/#conflicts
+        // https://github.com/cybozu-go/cke/issues/311
         let patch_response = secrets
             .patch(
                 &rule.spec.destination_name,
@@ -345,6 +352,7 @@ impl Runner {
                 serde_yaml::to_vec(&patch)?,
             )
             .await;
+        // Retry as a create request when a resource does not exist yet
         if let Err(e) = patch_response {
             match &e {
                 kube::error::Error::Api(ae) => {
@@ -415,6 +423,10 @@ impl Runner {
                 name,
                 &kube::api::PatchParams {
                     field_manager: Some("kube2vault.sorah.jp".to_string()),
+                    // Intentionally force
+                    // https://v1-17.docs.kubernetes.io/docs/reference/using-api/api-concepts/#conflicts
+                    // https://github.com/cybozu-go/cke/issues/311
+                    force: true,
                     ..kube::api::PatchParams::default_apply()
                 },
                 patch,
