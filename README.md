@@ -1,12 +1,13 @@
-# Vault2kube: Periodically store Vault secret to Kubernetes seriticate
+# Vault2kube: manage Vault lease on Kubernetes secrets and keep it fresh
 
 __UNDER DEVELOPMENT:__ Docker image and actual k8s manifests to deploy is not yet ready.
 
 ## What's this
 
-Fetch a secret from Vault, and copy it to a k8s secret. Then rollout restart on specified k8s resource.
+Fetch a secret from Vault, and copy it to a k8s secret. Then rollout restart on specified k8s resources.
 
-This tool is intended to run using k8s CronJob, and use with Vault leased secrets (e.g. database creds)
+This tool is intended to run using k8s CronJob, and use with Vault _leased, managed_ secrets (e.g. database creds).
+Note that the motivation behind this tool is not copying _static_ secrets from Vault; even is possible.
 
 ### Difference with vault-k8s
 
