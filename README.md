@@ -1,6 +1,6 @@
 # Vault2kube: manage Vault lease on Kubernetes secrets and keep it fresh
 
-__UNDER DEVELOPMENT:__ Docker image and actual k8s manifests to deploy is not yet ready.
+![docker-build](https://github.com/sorah/vault2kube/workflows/docker-build/badge.svg)
 
 ## What's this
 
@@ -17,6 +17,10 @@ This tool uses MutationWebhook to inject a `vault agent` into a pod, and the inj
 This design allows to cover various use cases, however it is not simple for just copying leaesd, short-lived secrets (e.g. database) from Vault.
 
 vault-k8s would be a good choice when you cannot trust k8s secrets store, or you need to interact with Vault to do some advanced usage.
+
+## Docker repository
+
+https://hub.docker.com/r/sorah/vault2kube
 
 ## Setup
 
