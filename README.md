@@ -57,7 +57,7 @@ Default to in-cluster config, but can refer to `$KUBECONFIG` (`~/.kube/config`).
 
 ### Configure a rule
 
-kube2vault uses CRD to configure a rule and persist its state. Create `VaultStoreRule` like as follows:
+vault2kube uses CRD to configure a rule and persist its state. Create `VaultStoreRule` like as follows:
 
 ``` yaml
 apiVersion: "vault2kube.sorah.jp/v1"
@@ -103,21 +103,17 @@ spec:
 Then trigger a job, and confirm the result.
 
 ```
-kubectl create job --from=cronjob/kube2vault kube2vault-manual-${USER}-$(date +%s)
+kubectl create job --from=cronjob/vault2kube vault2kube-manual-${USER}-$(date +%s)
 kubectl get secret my-database-creds
 ```
 
-## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/sorah/vault2kube.
 
-
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+The tool is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
