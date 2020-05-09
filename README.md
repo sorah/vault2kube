@@ -107,7 +107,16 @@ kubectl create job --from=cronjob/vault2kube vault2kube-manual-${USER}-$(date +%
 kubectl get secret my-database-creds
 ```
 
+## Advanced topics
 
+### Request force renew/rotate
+
+Setting the following annotations to VaultStoreRule lets Vault2kube perform early renew/rotate:
+
+- Renew: `vault2kube.sorah.jp/renewRequestedAt` (ISO8601 datetime format)
+- Rotate: `vault2kube.sorah.jp/rotateRequestedAt` (ISO8601 datetime format)
+
+Actions are performed when a specified datetime is newer than the last successful run (.status.lastSuccessfulRunAt).
 
 
 ## Contributing

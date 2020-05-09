@@ -79,21 +79,11 @@ impl Runner {
         let lease_not_exists = status.lease_id.is_none();
         let orig_expires_at = status.expires_at;
         let orphaned_lease_id = status.next_lease_id.clone();
+        let last_successful_run_at = status.last_successful_run_at;
 
         // record this run
         status.last_run_started_at = Some(self.now.clone());
         self.patch_status(&rule, &status).await?;
-
-        // try revoke
-        if status.last_lease_id.is_some()
-            && is_time_after_deadline(
-                &self.now,
-                &status.rotated_at,
-                rule.spec.revoke_after_seconds.and_then(|s| Some(s * -1)),
-            )
-        {
-            self.revoke_last(&mut status).await?;
-        }
 
         // discard an expired lease when present
         let needs_discard = orig_expires_at
@@ -108,9 +98,37 @@ impl Runner {
 
         let needs_rotate = lease_not_exists
             || needs_discard
+            || check_request_annotation(
+                last_successful_run_at.as_ref(),
+                rule.metadata
+                    .annotations
+                    .as_ref()
+                    .and_then(|a| a.get("vault2kube.sorah.jp/rotateRequestedAt")),
+            )
             || is_time_after_deadline(&self.now, &orig_expires_at, rule.spec.rotate_before_seconds);
-        let needs_renew =
-            is_time_after_deadline(&self.now, &orig_expires_at, rule.spec.renew_before_seconds);
+
+        let needs_renew = check_request_annotation(
+            last_successful_run_at.as_ref(),
+            rule.metadata
+                .annotations
+                .as_ref()
+                .and_then(|a| a.get("vault2kube.sorah.jp/renewRequestedAt")),
+        ) || is_time_after_deadline(
+            &self.now,
+            &orig_expires_at,
+            rule.spec.renew_before_seconds,
+        );
+
+        // try revoke
+        if status.last_lease_id.is_some()
+            && (is_time_after_deadline(
+                &self.now,
+                &status.rotated_at,
+                rule.spec.revoke_after_seconds.and_then(|s| Some(s * -1)),
+            ) || needs_rotate)
+        {
+            self.revoke_last(&mut status).await?;
+        }
 
         // renew
         if !needs_discard && !needs_rotate && needs_renew {
@@ -434,6 +452,19 @@ impl Runner {
             .await?;
         Ok(())
     }
+}
+
+fn check_request_annotation(now: Option<&DateTime<Utc>>, iso8601str: Option<&String>) -> bool {
+    if iso8601str.is_none() {
+        return false;
+    }
+    if now.is_none() {
+        return true;
+    }
+    if let Ok(requested_at) = DateTime::parse_from_rfc3339(&iso8601str.unwrap()) {
+        return now.unwrap() < &requested_at;
+    }
+    false
 }
 
 fn is_time_after_deadline(
