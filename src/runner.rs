@@ -432,9 +432,11 @@ impl Runner {
         let patch = serde_yaml::to_vec(&serde_json::json!({
             "apiVersion": "apps/v1",
             "kind": kind,
-            "metadata": {
-                "annotations": {
-                    "vault2kube.sorah.jp/restartedAt": self.now,
+            "spec": {
+                "template": {
+                    "annotations": {
+                        "vault2kube.sorah.jp/restartedAt": self.now,
+                    },
                 },
             },
         }))?;
