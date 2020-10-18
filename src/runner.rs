@@ -336,11 +336,13 @@ impl Runner {
         let default_ns = "default".to_string();
         let namespace = &rule.metadata.namespace.as_ref().unwrap_or(&default_ns);
 
-        let hb = handlebars::Handlebars::new();
         let secrets: kube::Api<Secret> = kube::Api::namespaced(self.kube.clone(), namespace);
 
         let mut string_data: HashMap<String, String> = HashMap::new();
         let mut iter = rule.spec.templates.iter();
+
+        let mut hb = handlebars::Handlebars::new();
+        hb.register_escape_fn(handlebars::no_escape);
 
         while let Some(tmpl) = iter.next() {
             log::info!("   * key={:?}, template={:?}", &tmpl.key, &tmpl.template,);
