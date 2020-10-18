@@ -30,6 +30,7 @@
                 properties: {
                   sourcePath: { type: 'string' },
                   destinationName: { type: 'string' },
+                  parameters: { type: 'object', additionalProperties: true, nullable: true, default: null },
                   templates: {
                     type: 'array',
                     items: {

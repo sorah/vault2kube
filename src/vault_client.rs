@@ -75,6 +75,15 @@ impl Client {
         Ok(response)
     }
 
+    pub async fn write(
+        &self,
+        path: &str,
+        payload: &serde_json::Map<String, serde_json::Value>,
+    ) -> Result<LeaseResponse, Box<dyn Error>> {
+        let response: LeaseResponse = self.post(path, &payload).await?.json().await?;
+        Ok(response)
+    }
+
     pub async fn renew(&self, lease_id: &str) -> Result<RenewResponse, Box<dyn Error>> {
         let payload = RenewRequest {
             lease_id: lease_id.to_string(),
@@ -169,7 +178,7 @@ pub struct LeaseResponse {
     pub lease_id: String,
     pub lease_duration: u32,
     pub renewable: bool,
-    pub data: HashMap<String, String>,
+    pub data: HashMap<String, serde_json::Value>,
     pub warnings: Option<Vec<String>>,
 }
 

@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct VaultStoreRuleSpec {
     pub source_path: String,
+    pub parameters: Option<serde_json::Map<String, serde_json::Value>>,
     pub destination_name: String,
     pub templates: Vec<VaultStoreRuleTemplate>,
     pub rollout_restarts: Option<Vec<VaultStoreRuleRollout>>,

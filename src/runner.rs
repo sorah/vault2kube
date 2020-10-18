@@ -137,7 +137,13 @@ impl Runner {
 
         // rotate
         if needs_rotate {
-            let lease = self.rotate(&rule.spec.source_path, &mut status).await?;
+            let lease = self
+                .rotate(
+                    &rule.spec.source_path,
+                    rule.spec.parameters.as_ref(),
+                    &mut status,
+                )
+                .await?;
 
             // Save the fresh lease_id as soon as possible, to easily revoke them later in case of any failure
             // may occur in the same run.
@@ -292,10 +298,17 @@ impl Runner {
     async fn rotate(
         &self,
         source_path: &str,
+        parameters: Option<&serde_json::Map<String, serde_json::Value>>,
         status: &mut VaultStoreRuleStatus,
     ) -> Result<vault_client::LeaseResponse, Box<dyn std::error::Error>> {
         log::info!("===> Acquiring a new Vault lease at path={:?}", source_path);
-        let lease = self.vault_client.read(&source_path).await?;
+        let lease = match parameters {
+            Some(params) => {
+                log::info!("   * params: {:}", serde_json::json! {params});
+                self.vault_client.write(&source_path, &params).await?
+            }
+            None => self.vault_client.read(&source_path).await?,
+        };
         if let Some(original_lease_id) = status.lease_id.clone() {
             status.last_lease_id = Some(original_lease_id);
             status.rotated_at = Some(self.now);

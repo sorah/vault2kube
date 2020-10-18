@@ -72,6 +72,9 @@ metadata:
 spec:
   ## Path to source secret on Vault (what you specify to `vault read` command)
   sourcePath: my/path/to/database-mount/creds/my-database-role
+  
+  ## Optional parameters; When this is present, vault2kube will use POST (= vault write) to get leases
+  # parameters: {}
 
   ## Destination secret to store its lease as a k8s secret
   destinationName: my-database-creds

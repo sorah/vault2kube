@@ -21,6 +21,11 @@ spec:
             properties:
               destinationName:
                 type: string
+              parameters:
+                additionalProperties: true
+                default:
+                nullable: true
+                type: object
               renewBeforeSeconds:
                 minimum: 0
                 nullable: true
