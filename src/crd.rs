@@ -3,7 +3,12 @@ use kube_derive::CustomResource;
 use serde::{Deserialize, Serialize};
 
 #[derive(CustomResource, Serialize, Deserialize, Clone, Debug, Default)]
-#[kube(group = "vault2kube.sorah.jp", version = "v1", namespaced)]
+#[kube(
+    group = "vault2kube.sorah.jp",
+    version = "v1",
+    namespaced,
+    kind = "VaultStoreRule"
+)]
 #[kube(status = "VaultStoreRuleStatus")]
 #[serde(rename_all = "camelCase")]
 pub struct VaultStoreRuleSpec {

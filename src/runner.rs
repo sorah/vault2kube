@@ -202,11 +202,7 @@ impl Runner {
         kube_crd
             .patch_status(
                 rule.metadata.name.as_ref().ok_or("name is missing")?,
-                &kube::api::PatchParams {
-                    field_manager: Some("kube2vault.sorah.jp".to_string()),
-                    force: true,
-                    ..kube::api::PatchParams::default_apply()
-                },
+                &kube::api::PatchParams::apply("vault2kube.sorah.jp").force(),
                 patch,
             )
             .await?;
@@ -242,11 +238,7 @@ impl Runner {
         kube_crd
             .patch_status(
                 rule.metadata.name.as_ref().ok_or("name is missing")?,
-                &kube::api::PatchParams {
-                    field_manager: Some("kube2vault.sorah.jp".to_string()),
-                    force: true,
-                    ..kube::api::PatchParams::default_apply()
-                },
+                &kube::api::PatchParams::apply("vault2kube.sorah.jp").force(),
                 patch,
             )
             .await?;
@@ -363,10 +355,7 @@ impl Runner {
         let patch_response = secrets
             .patch(
                 &rule.spec.destination_name,
-                &kube::api::PatchParams {
-                    field_manager: Some("kube2vault.sorah.jp".to_string()),
-                    ..kube::api::PatchParams::default_apply()
-                },
+                &kube::api::PatchParams::apply("vault2kube.sorah.jp").force(),
                 serde_yaml::to_vec(&patch)?,
             )
             .await;
@@ -436,17 +425,14 @@ impl Runner {
                 },
             },
         }))?;
+
+        // Intentionally force
+        // https://v1-17.docs.kubernetes.io/docs/reference/using-api/api-concepts/#conflicts
+        // https://github.com/cybozu-go/cke/issues/311
         client
             .patch(
                 name,
-                &kube::api::PatchParams {
-                    field_manager: Some("kube2vault.sorah.jp".to_string()),
-                    // Intentionally force
-                    // https://v1-17.docs.kubernetes.io/docs/reference/using-api/api-concepts/#conflicts
-                    // https://github.com/cybozu-go/cke/issues/311
-                    force: true,
-                    ..kube::api::PatchParams::default_apply()
-                },
+                &kube::api::PatchParams::apply("vault2kube.sorah.jp").force(),
                 patch,
             )
             .await?;

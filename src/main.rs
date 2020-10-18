@@ -2,13 +2,12 @@ use clap;
 use kube;
 use log;
 use std::env;
-use tokio;
 
 use vault2kube::runner::Runner;
 use vault2kube::vault_client;
 
 fn main() -> anyhow::Result<()> {
-    env_logger::from_env(env_logger::Env::default().default_filter_or("info")).init();
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
     let app = clap::App::new("vault2kube")
         .version(clap::crate_version!())
         .about("Copy Vault leased secret to Kubernetes secret")

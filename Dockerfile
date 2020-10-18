@@ -1,4 +1,4 @@
-FROM rust:1.43-buster as builder
+FROM rust:1.47-buster as builder
 
 RUN mkdir -p /build/src
 RUN echo 'fn main() {}' > /build/src/main.rs
