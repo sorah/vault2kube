@@ -434,8 +434,10 @@ impl Runner {
             "kind": kind,
             "spec": {
                 "template": {
-                    "annotations": {
-                        "vault2kube.sorah.jp/restartedAt": self.now,
+                    "metadata": {
+                        "annotations": {
+                            "vault2kube.sorah.jp/restartedAt": self.now,
+                        },
                     },
                 },
             },
