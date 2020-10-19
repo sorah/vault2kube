@@ -1,6 +1,6 @@
 [package]
 name = "vault2kube"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Sorah Fukumori <her@sorah.jp>"]
 edition = "2018"
 
