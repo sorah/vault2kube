@@ -316,6 +316,10 @@ impl Runner {
         }
         status.lease_id = Some(lease.lease_id.clone());
         status.ttl = Some(lease.lease_duration);
+        if status.lease_id.as_ref().unwrap().len() == 0 {
+            log::warn!("   ! lease_id is empty... some secret backends may not generate lease by default (for instance, PKI role has `generate_lease` parameter)");
+            status.lease_id = None;
+        }
         status.expires_at =
             Some(Utc::now() + chrono::Duration::seconds(status.ttl.unwrap() as i64));
         log::info!(
