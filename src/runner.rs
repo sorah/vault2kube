@@ -309,6 +309,7 @@ impl Runner {
             }
             None => self.vault_client.read(&source_path).await?,
         };
+        log::trace!("lease_response={:}", serde_json::json! {lease.clone()});
         if let Some(original_lease_id) = status.lease_id.clone() {
             status.last_lease_id = Some(original_lease_id);
             status.rotated_at = Some(self.now);

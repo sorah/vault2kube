@@ -172,7 +172,7 @@ struct RenewRequest {
     pub lease_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct LeaseResponse {
     pub request_id: String,
     pub lease_id: String,
