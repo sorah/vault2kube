@@ -348,6 +348,8 @@ impl Runner {
 
         let mut hb = handlebars::Handlebars::new();
         hb.register_escape_fn(handlebars::no_escape);
+        hb.register_helper("base64Encode", Box::new(crate::helpers::base64_encode));
+        hb.register_helper("base64Decode", Box::new(crate::helpers::base64_decode));
 
         while let Some(tmpl) = iter.next() {
             log::info!("   * key={:?}, template={:?}", &tmpl.key, &tmpl.template,);
